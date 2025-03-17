@@ -1,57 +1,41 @@
-var x = 150;
-var y = 150;
+var canvas = document.getElementById("canvas");
+var ctx = canvas.getContext("2d");
+var x = canvas.width/2;
+var y = canvas.height-30;
 var dx = 2;
-var dy = 4;
-var ctx;
-var canvas;
-var WIDTH;
-var HEIGHT;
-var r=10;
-function init() {
+var dy = -2;
+var ballColor = "#0095DD"		
+var ballRadius = 10;
 
-	canvas=document.getElementById('canvas');
-	ctx = canvas.getContext('2d');
-	return setInterval(draw, 10); //klic funkcije draw vsakih 10 ms; http://www.w3schools.com/jsref/met_win_setinterval.asp
-	ctx = $('#canvas')[0].getContext("2d");
-  WIDTH = $("#canvas").width();
-  HEIGHT = $("#canvas").height();
-  return setInterval(draw, 10);
-
-}
-
-function circle(x,y,r) {
-  ctx.beginPath();
-  ctx.arc(x, y, r, 0, Math.PI*2, true);
-  ctx.closePath();
-  ctx.fill();
-}
-
-function rect(x,y,w,h) {
-  ctx.beginPath();
-  ctx.rect(x,y,w,h);
-  ctx.closePath();
-  ctx.fill();
-}
-
-
-
-function draw() {
-	ctx.clearRect(0,0,500,700);
+function drawBall() {
 	ctx.beginPath();
-	ctx.arc(x, y, 10, 0, Math.PI*2, true);
-	ctx.closePath();
+	ctx.arc(x, y, ballRadius, 0, Math.PI*2);
+	ctx.fillStyle = ballColor; 
 	ctx.fill();
-	x += dx;
-	y += dy;
-
-	clear();
-	circle(x, y, 10);
-	if (x + dx > WIDTH (-r)|| x + dx < 0 (+r))
-	dx = -dx;
-	if (y + dy > HEIGHT (-r)|| y + dy < 0 (+r))
-	dy = -dy;
-	x += dx;
-	y += dy;
-
+	ctx.closePath();
 }
-init();
+
+var paddlex;
+var paddleh;
+var paddlew;
+
+function init_paddle() {
+  	paddlex = WIDTH / 2;
+  	paddleh = 10;
+  	paddlew = 75;
+}
+		
+function draw() {
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	drawBall();
+	x += dx;
+	y += dy;
+	if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
+		dx = -dx;
+	}
+	if(y + dy > canvas.height-ballRadius || y + dy < ballRadius) {
+		dy = -dy;
+	}
+}
+setInterval(draw, 5);
+init_paddle();
