@@ -1,11 +1,24 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
 body {
     background-color: #F6DCAC;
-    background-image: url(img/);
+    background-image: url(img/crteR.jpg);
+    background-repeat: no-repeat;
+    background-size: 100%;
 }
 
 #canvas {
     background: #80C4E9;
-    box-shadow: 15px 15px #F85525, 25px 25px #F1A512, 35px 35px #2BAF90;
+    box-shadow: -10px 10px #F85525, 
+                10px -10px #F85525, 
+                -20px 20px #F1A512, 
+                20px -20px #F1A512, 
+                -30px 30px #2BAF90, 
+                30px -30px #2BAF90;
+    border-radius: 2.5px;
 }
 
 .canvasPosition {
