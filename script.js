@@ -128,13 +128,14 @@ function drawIt() {
             dx = -dx;
         if (y + dy < 0 + r)
             dy = -dy;
-        else if (y + dy > HEIGHT - r ) {
-            if (x > paddlex && x < paddlex + paddlew){
-                dy = -dy;
-                dx = 8 * ((x-(paddlex+paddlew/2))/paddlew);
-            }
-            else if (y + dy > HEIGHT - r)
-                clearInterval(intervalId);
+        else if (x > paddlex && x < paddlex + paddlew && y > canvas.height - paddleh - r) {
+            dy = -dy ;
+            dx = 8 * ((x - (paddlex + paddlew / 2)) / paddlew);
+            console.log("hit on paddle");
+        } else if (!(x > paddlex && x < paddlex + paddlew) && y > canvas.height - r) {
+
+            clearInterval(intervalId);
+            drawGameOver();
         }
         x += dx;
         y += dy;
