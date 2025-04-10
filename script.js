@@ -127,7 +127,7 @@ function drawIt() {
             dy = -dy;
             bricks[row][col]--;
             
-            // Only add a point if the brick is now destroyed (i.e., becomes 0)
+            // Dodaj tocko ko je true
             if (bricks[row][col] === 0) {
                 tocke += 1;
                 $("#tocke").html(tocke);
