@@ -58,15 +58,15 @@ function drawIt() {
     }
     //nastavljanje leve in desne tipke
     function onKeyDown(evt) {
-        if (evt.keyCode == 39 || evt.keyCode == 65)
+        if (evt.keyCode == 39 || evt.keyCode == 68)
             rightDown = true;
-        else if (evt.keyCode == 37 || evt.keyCode == 68) leftDown = true;
+        else if (evt.keyCode == 37 || evt.keyCode == 65) leftDown = true;
     }
 
     function onKeyUp(evt) { //65 = a, 68 = d 
         if (evt.keyCode == 39 || evt.keyCode == 68)
             rightDown = false;
-        else if (evt.keyCode == 37 || evt.keyCode == 68) leftDown = false;
+        else if (evt.keyCode == 37 || evt.keyCode == 65) leftDown = false;
     }
     $(document).keydown(onKeyDown);
     $(document).keyup(onKeyUp);
@@ -74,6 +74,7 @@ function drawIt() {
     function draw() {
 
         clear();
+        ctx.fillStyle = "white";
         circle(x, y, 10);
         //premik ploščice levo in desno
         if (rightDown) {
@@ -95,7 +96,10 @@ function drawIt() {
         for (i=0; i < NROWS; i++) {
             ctx.fillStyle = rowcolors[i]; //barvanje vrstic
             for (j=0; j < NCOLS; j++) {
-              if (bricks[i][j] == 1) {
+              if(bricks[i][j] == 1) ctx.fillStyle = "white";
+              if(bricks[i][j] == 2) ctx.fillStyle = "red";
+              if(bricks[i][j] == 3) ctx.fillStyle = "black";
+              if (bricks[i][j] > 0) {
                 rect((j * (BRICKWIDTH + PADDING)) + PADDING,
                     (i * (BRICKHEIGHT + PADDING)) + PADDING,
                     BRICKWIDTH, BRICKHEIGHT);
@@ -104,7 +108,7 @@ function drawIt() {
           }
         
         //riši opeke
-        for (i = 0; i < NROWS; i++) {
+        /*for (i = 0; i < NROWS; i++) {
             for (j = 0; j < NCOLS; j++) {
                 if (bricks[i][j] == 1) {
                     rect((j * (BRICKWIDTH + PADDING)) + PADDING,
@@ -112,17 +116,22 @@ function drawIt() {
                         BRICKWIDTH, BRICKHEIGHT);
                 }
             }
-        }
+        }*/
 
         rowheight = BRICKHEIGHT + PADDING  / 2; //Smo zadeli opeko?
         colwidth = BRICKWIDTH + PADDING  / 2;
         row = Math.floor(y / rowheight);
         col = Math.floor(x / colwidth);
         //Če smo zadeli opeko, vrni povratno kroglo in označi v tabeli, da opeke ni več
-        if (y < NROWS * rowheight && row >= 0 && col >= 0 && bricks[row][col] == 1) {
-            dy = -dy; bricks[row][col] = 0;
-            tocke += 1;
-            $("#tocke").html(tocke);
+        if (y < NROWS * rowheight && row >= 0 && col >= 0 && bricks[row][col] > 0) {
+            dy = -dy;
+            bricks[row][col]--;
+            
+            // Only add a point if the brick is now destroyed (i.e., becomes 0)
+            if (bricks[row][col] === 0) {
+                tocke += 1;
+                $("#tocke").html(tocke);
+            }
         }
         if (x + dx > WIDTH - r || x + dx <  r)
             dx = -dx;
@@ -151,7 +160,9 @@ function drawIt() {
         for (var i = 0; i < NROWS; i++) {
             bricks[i] = new Array(NCOLS);
             for (var j = 0; j < NCOLS; j++) {
-                bricks[i][j] = 1;
+                if(i==j || i+j==NROWS-1) bricks[i][j] = 2;
+                else if(bricks[i][j] = 1) bricks[i][j] = 3;
+                
             }
         }
     }
