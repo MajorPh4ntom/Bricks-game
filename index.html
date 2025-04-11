@@ -9,12 +9,18 @@
 </head>
 <body onload="drawIt()">
     <div class="canvasPosition">
-        <canvas id="canvas" width="700" height="500" style=""></canvas>
+        <canvas id="canvas" width="700" height="500"></canvas>
     </div>
     <div class="centerTocke">
-        <p id="tocke"></p>
+        <p id="tocke">0</p>
     </div>
-   
+
+    <!-- Pause/Resume Button -->
+    <div class="centerPause">
+        <button id="pauseResumeBtn">Pause</button>
+    </div>
+
     <script type="text/javascript" src="script.js"></script> 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 </html>

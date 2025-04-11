@@ -1,13 +1,16 @@
+let isPaused = false;  // Variable to track the paused state
+let intervalId;  // To store the interval ID for the game loop
+
 function drawIt() {
-    var x = 200;
-    var y = 100;
+    var x = 308;
+    var y = 400;
     var dx = 2;
     var dy = 4;
     var WIDTH;
     var HEIGHT;
     var r = 10;
-    var tocke; 
-    var rowcolors = ["#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", " #FFFFFF"];
+    var tocke;
+    var rowcolors = ["#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF"];
     var paddlecolor = "#FFFFFF";
     var ballcolor = "#FFFFFF";
     var bricks;
@@ -17,7 +20,6 @@ function drawIt() {
     var BRICKHEIGHT;
     var PADDING;
     var ctx;
-    let intervalId;
     var rightDown = false;
     var leftDown = false;
     var paddlex;
@@ -30,7 +32,7 @@ function drawIt() {
         HEIGHT = $("#canvas").height();
         tocke = 0;
         $("#tocke").html(tocke);
-        return intervalId = setInterval(draw, 10);
+        intervalId = setInterval(draw, 10);  // Start the game loop
     }
 
     function circle(x, y, r) {
@@ -50,124 +52,135 @@ function drawIt() {
     function clear() {
         ctx.clearRect(0, 0, WIDTH, HEIGHT);
     }
-    //END LIBRARY CODE
+
     function init_paddle() {
-        paddlex = WIDTH/2;
+        paddlex = WIDTH / 2 - 50;
         paddleh = 10;
         paddlew = 100;
     }
-    //nastavljanje leve in desne tipke
+
+    // Handle key presses
     function onKeyDown(evt) {
         if (evt.keyCode == 39 || evt.keyCode == 68)
             rightDown = true;
         else if (evt.keyCode == 37 || evt.keyCode == 65) leftDown = true;
     }
 
-    function onKeyUp(evt) { //65 = a, 68 = d 
+    function onKeyUp(evt) {
         if (evt.keyCode == 39 || evt.keyCode == 68)
             rightDown = false;
         else if (evt.keyCode == 37 || evt.keyCode == 65) leftDown = false;
     }
+
     $(document).keydown(onKeyDown);
     $(document).keyup(onKeyUp);
 
     function draw() {
+        if (isPaused) return;  // If the game is paused, don't continue the game loop
 
         clear();
         ctx.fillStyle = "white";
         circle(x, y, 10);
-        //premik ploščice levo in desno
+
         if (rightDown) {
             if ((paddlex + paddlew) < WIDTH) {
                 paddlex += 5;
             } else {
                 paddlex = WIDTH - paddlew;
             }
-        }
-        else if (leftDown) {
+        } else if (leftDown) {
             if (paddlex > 0) {
                 paddlex -= 5;
             } else {
                 paddlex = 0;
             }
         }
+
         rect(paddlex, HEIGHT - paddleh, paddlew, paddleh);
 
-        for (i=0; i < NROWS; i++) {
-            ctx.fillStyle = rowcolors[i]; //barvanje vrstic
-            for (j=0; j < NCOLS; j++) {
-              if(bricks[i][j] == 1) ctx.fillStyle = "white";
-              if(bricks[i][j] == 2) ctx.fillStyle = "red";
-              if(bricks[i][j] == 3) ctx.fillStyle = "black";
-              if (bricks[i][j] > 0) {
-                rect((j * (BRICKWIDTH + PADDING)) + PADDING,
-                    (i * (BRICKHEIGHT + PADDING)) + PADDING,
-                    BRICKWIDTH, BRICKHEIGHT);
-              }
-            }
-          }
-        
-        //riši opeke
-        /*for (i = 0; i < NROWS; i++) {
-            for (j = 0; j < NCOLS; j++) {
-                if (bricks[i][j] == 1) {
+        for (let i = 0; i < NROWS; i++) {
+            ctx.fillStyle = rowcolors[i];
+            for (let j = 0; j < NCOLS; j++) {
+                if (bricks[i][j] == 1) ctx.fillStyle = "white";
+                if (bricks[i][j] == 2) ctx.fillStyle = "red";
+                if (bricks[i][j] == 3) ctx.fillStyle = "black";
+                if (bricks[i][j] > 0) {
                     rect((j * (BRICKWIDTH + PADDING)) + PADDING,
                         (i * (BRICKHEIGHT + PADDING)) + PADDING,
                         BRICKWIDTH, BRICKHEIGHT);
                 }
             }
-        }*/
+        }
 
-        rowheight = BRICKHEIGHT + PADDING  / 2; //Smo zadeli opeko?
-        colwidth = BRICKWIDTH + PADDING  / 2;
+        rowheight = BRICKHEIGHT + PADDING / 2;
+        colwidth = BRICKWIDTH + PADDING / 2;
         row = Math.floor(y / rowheight);
         col = Math.floor(x / colwidth);
-        //Če smo zadeli opeko, vrni povratno kroglo in označi v tabeli, da opeke ni več
+
         if (y < NROWS * rowheight && row >= 0 && col >= 0 && bricks[row][col] > 0) {
             dy = -dy;
             bricks[row][col]--;
-            
-            // Dodaj tocko ko je true
+
             if (bricks[row][col] === 0) {
                 tocke += 1;
                 $("#tocke").html(tocke);
             }
         }
-        if (x + dx > WIDTH - r || x + dx <  r)
+
+        if (x + dx > WIDTH - r || x + dx < r)
             dx = -dx;
         if (y + dy < 0 + r)
             dy = -dy;
         else if (x > paddlex && x < paddlex + paddlew && y > canvas.height - paddleh - r) {
-            dy = -dy ;
+            dy = -dy;
             dx = 8 * ((x - (paddlex + paddlew / 2)) / paddlew);
-            console.log("hit on paddle");
         } else if (!(x > paddlex && x < paddlex + paddlew) && y > canvas.height - r) {
-
             clearInterval(intervalId);
-            drawGameOver();
+            Swal.fire({
+                title: 'Game Over!',
+                text: 'You scored ' + tocke + ' points.',
+                icon: 'error',
+                confirmButtonText: 'Try Again',
+                willClose: () => {
+                    location.reload();  // Or reinitialize the game logic here
+                }
+            });
         }
+
         x += dx;
         y += dy;
     }
 
-    function initbricks() { //inicializacija opek - polnjenje v tabelo
+    function initbricks() {
         NROWS = 5;
         NCOLS = 5;
         BRICKWIDTH = (WIDTH / NCOLS) - 1;
         BRICKHEIGHT = 15;
         PADDING = 1;
         bricks = new Array(NROWS);
-        for (var i = 0; i < NROWS; i++) {
+        for (let i = 0; i < NROWS; i++) {
             bricks[i] = new Array(NCOLS);
-            for (var j = 0; j < NCOLS; j++) {
-                if(i==j || i+j==NROWS-1) bricks[i][j] = 2;
-                else if(bricks[i][j] = 1) bricks[i][j] = 3;
-                
+            for (let j = 0; j < NCOLS; j++) {
+                if (i == j || i + j == NROWS - 1) bricks[i][j] = 2;
+                else if (bricks[i][j] = 1) bricks[i][j] = 3;
             }
         }
     }
+
     init();
     init_paddle();
     initbricks();
-}
 
+    // Pause/Resume Button Logic
+    $("#pauseResumeBtn").click(function() {
+        if (isPaused) {
+            isPaused = false;
+            $(this).text("Pause");
+            intervalId = setInterval(draw, 10);  // Restart the game loop
+        } else {
+            isPaused = true;
+            $(this).text("Resume");
+            clearInterval(intervalId);  // Pause the game loop
+        }
+    });
+}
