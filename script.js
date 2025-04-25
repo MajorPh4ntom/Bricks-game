@@ -1,11 +1,11 @@
-let isPaused = false;  // Variable to track the paused state
-let intervalId;  // To store the interval ID for the game loop
+let isPaused = false;
+let intervalId;
 
 function drawIt() {
     var x = 308;
     var y = 400;
-    var dx = 2;
-    var dy = 4;
+    var dx = 1;
+    var dy = 1;
     var WIDTH;
     var HEIGHT;
     var r = 10;
@@ -13,12 +13,14 @@ function drawIt() {
     var rowcolors = ["#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF"];
     var paddlecolor = "#FFFFFF";
     var ballcolor = "#FFFFFF";
-    var bricks;
-    var NROWS;
-    var NCOLS;
-    var BRICKWIDTH;
-    var BRICKHEIGHT;
-    var PADDING;
+    var bricks = [];
+    var brickRowCount = 5;
+    var brickColumnCount = 5;
+    var brickWidth;
+    var brickHeight = 15;
+    var brickPadding = 10;
+    var brickOffsetTop = 30;
+    var brickOffsetLeft = 30;
     var ctx;
     var rightDown = false;
     var leftDown = false;
@@ -30,9 +32,10 @@ function drawIt() {
         ctx = $('#canvas')[0].getContext("2d");
         WIDTH = $("#canvas").width();
         HEIGHT = $("#canvas").height();
+        brickWidth = (WIDTH - brickOffsetLeft * 2 - (brickColumnCount - 1) * brickPadding) / brickColumnCount;
         tocke = 0;
         $("#tocke").html(tocke);
-        intervalId = setInterval(draw, 10);  // Start the game loop
+        intervalId = setInterval(draw, 10);
     }
 
     function circle(x, y, r) {
@@ -59,82 +62,123 @@ function drawIt() {
         paddlew = 100;
     }
 
-    // Handle key presses
     function onKeyDown(evt) {
         if (evt.keyCode == 39 || evt.keyCode == 68)
             rightDown = true;
-        else if (evt.keyCode == 37 || evt.keyCode == 65) leftDown = true;
+        else if (evt.keyCode == 37 || evt.keyCode == 65)
+            leftDown = true;
     }
 
     function onKeyUp(evt) {
         if (evt.keyCode == 39 || evt.keyCode == 68)
             rightDown = false;
-        else if (evt.keyCode == 37 || evt.keyCode == 65) leftDown = false;
+        else if (evt.keyCode == 37 || evt.keyCode == 65)
+            leftDown = false;
     }
 
     $(document).keydown(onKeyDown);
     $(document).keyup(onKeyUp);
 
-    function draw() {
-        if (isPaused) return;  // If the game is paused, don't continue the game loop
-
-        clear();
-        ctx.fillStyle = "white";
-        circle(x, y, 10);
-
-        if (rightDown) {
-            if ((paddlex + paddlew) < WIDTH) {
-                paddlex += 5;
-            } else {
-                paddlex = WIDTH - paddlew;
-            }
-        } else if (leftDown) {
-            if (paddlex > 0) {
-                paddlex -= 5;
-            } else {
-                paddlex = 0;
+    function drawBricks() {
+        for (let c = 0; c < brickColumnCount; c++) {
+            for (let r = 0; r < brickRowCount; r++) {
+                if (bricks[c][r].status == 1) {
+                    let brickX = (c * (brickWidth + brickPadding)) + brickOffsetLeft;
+                    let brickY = (r * (brickHeight + brickPadding)) + brickOffsetTop;
+                    bricks[c][r].x = brickX;
+                    bricks[c][r].y = brickY;
+                    ctx.fillStyle = rowcolors[r];
+                    rect(brickX, brickY, brickWidth, brickHeight);
+                }
             }
         }
+    }
 
-        rect(paddlex, HEIGHT - paddleh, paddlew, paddleh);
+    function collisionDetection() {
+        let allBricksCleared = true;  // Add this to check if all bricks are cleared
 
-        for (let i = 0; i < NROWS; i++) {
-            ctx.fillStyle = rowcolors[i];
-            for (let j = 0; j < NCOLS; j++) {
-                if (bricks[i][j] == 1) ctx.fillStyle = "white";
-                if (bricks[i][j] == 2) ctx.fillStyle = "red";
-                if (bricks[i][j] == 3) ctx.fillStyle = "black";
-                if (bricks[i][j] > 0) {
-                    rect((j * (BRICKWIDTH + PADDING)) + PADDING,
-                        (i * (BRICKHEIGHT + PADDING)) + PADDING,
-                        BRICKWIDTH, BRICKHEIGHT);
+        for (let c = 0; c < brickColumnCount; c++) {
+            for (let r = 0; r < brickRowCount; r++) {
+                let b = bricks[c][r];
+                if (b.status === 1) {
+                    allBricksCleared = false;  // If there are still bricks, set to false
+                    let ballNextX = x + dx;
+                    let ballNextY = y + dy;
+
+                    let collision =
+                        ballNextX + r > b.x &&
+                        ballNextX - r < b.x + brickWidth &&
+                        ballNextY + r > b.y &&
+                        ballNextY - r < b.y + brickHeight;
+
+                    if (collision) {
+                        // Bounce based on entry direction
+                        let overlapX =
+                            Math.min(ballNextX + r, b.x + brickWidth) -
+                            Math.max(ballNextX - r, b.x);
+                        let overlapY =
+                            Math.min(ballNextY + r, b.y + brickHeight) -
+                            Math.max(ballNextY - r, b.y);
+
+                        if (overlapX < overlapY) {
+                            dx = -dx;
+                        } else {
+                            dy = -dy;
+                        }
+
+                        b.status = 0;
+                        tocke += 1;
+                        $("#tocke").html(tocke);
+                    }
                 }
             }
         }
 
-        rowheight = BRICKHEIGHT + PADDING / 2;
-        colwidth = BRICKWIDTH + PADDING / 2;
-        row = Math.floor(y / rowheight);
-        col = Math.floor(x / colwidth);
-
-        if (y < NROWS * rowheight && row >= 0 && col >= 0 && bricks[row][col] > 0) {
-            dy = -dy;
-            bricks[row][col]--;
-
-            if (bricks[row][col] === 0) {
-                tocke += 1;
-                $("#tocke").html(tocke);
-            }
+        // If all bricks are cleared, show the SweetAlert
+        if (allBricksCleared) {
+            clearInterval(intervalId);  // Stop the game
+            Swal.fire({
+                title: 'Congratulations!',
+                text: 'You cleared all the bricks and scored ' + tocke + ' points.',
+                icon: 'success',
+                confirmButtonText: 'Play Again',
+                willClose: () => {
+                    location.reload();  // Reload to restart the game
+                }
+            });
         }
+    }
 
-        if (x + dx > WIDTH - r || x + dx < r)
-            dx = -dx;
-        if (y + dy < 0 + r)
+    let prevX = x;
+    let prevY = y;
+
+    function draw() {
+        if (isPaused) return;
+
+        clear();
+        ctx.fillStyle = ballcolor;
+        circle(x, y, r);
+
+        if (rightDown && paddlex + paddlew < WIDTH) paddlex += 5;
+        if (leftDown && paddlex > 0) paddlex -= 5;
+
+        ctx.fillStyle = paddlecolor;
+        rect(paddlex, HEIGHT - paddleh, paddlew, paddleh);
+
+        drawBricks();
+        collisionDetection();
+        x += dx;
+        y += dy;
+
+
+        if (x + dx > WIDTH - r || x + dx < r) dx = -dx;
+        if (y + dy < r) {
             dy = -dy;
-        else if (x > paddlex && x < paddlex + paddlew && y > canvas.height - paddleh - r) {
+        } else if (x > paddlex && x < paddlex + paddlew && y + r > HEIGHT - paddleh) {
             dy = -dy;
-            dx = 8 * ((x - (paddlex + paddlew / 2)) / paddlew);
-        } else if (!(x > paddlex && x < paddlex + paddlew) && y > canvas.height - r) {
+            let hitPos = (x - (paddlex + paddlew / 2)) / (paddlew / 2);
+            dx = hitPos * 1.5; // Adjusted multiplier for slower movement
+        } else if (!(x > paddlex && x < paddlex + paddlew) && y + r > HEIGHT) {
             clearInterval(intervalId);
             Swal.fire({
                 title: 'Game Over!',
@@ -142,45 +186,38 @@ function drawIt() {
                 icon: 'error',
                 confirmButtonText: 'Try Again',
                 willClose: () => {
-                    location.reload();  // Or reinitialize the game logic here
+                    location.reload();
                 }
             });
         }
 
         x += dx;
         y += dy;
+
     }
 
-    function initbricks() {
-        NROWS = 5;
-        NCOLS = 5;
-        BRICKWIDTH = (WIDTH / NCOLS) - 1;
-        BRICKHEIGHT = 15;
-        PADDING = 1;
-        bricks = new Array(NROWS);
-        for (let i = 0; i < NROWS; i++) {
-            bricks[i] = new Array(NCOLS);
-            for (let j = 0; j < NCOLS; j++) {
-                if (i == j || i + j == NROWS - 1) bricks[i][j] = 2;
-                else if (bricks[i][j] = 1) bricks[i][j] = 3;
+    function initBricks() {
+        for (let c = 0; c < brickColumnCount; c++) {
+            bricks[c] = [];
+            for (let r = 0; r < brickRowCount; r++) {
+                bricks[c][r] = { x: 0, y: 0, status: 1 };
             }
         }
     }
 
     init();
     init_paddle();
-    initbricks();
+    initBricks();
 
-    // Pause/Resume Button Logic
-    $("#pauseResumeBtn").click(function() {
+    $("#pauseResumeBtn").click(function () {
         if (isPaused) {
             isPaused = false;
             $(this).text("Pause");
-            intervalId = setInterval(draw, 10);  // Restart the game loop
+            intervalId = setInterval(draw, 10);
         } else {
             isPaused = true;
             $(this).text("Resume");
-            clearInterval(intervalId);  // Pause the game loop
+            clearInterval(intervalId);
         }
     });
 }
