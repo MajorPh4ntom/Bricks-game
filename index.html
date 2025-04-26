@@ -1,29 +1,48 @@
 <!DOCTYPE html>
-<html>
+<html lang="sl">
 <head>
-    <script type="text/javascript" src="jquery.js"></script> 
+    <script src="jquery.js"></script> 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" href="style.css">
     <title>Bricks-Game</title>
 </head>
 <body onload="drawIt()">
+
     <div class="canvasPosition">
         <canvas id="canvas" width="700" height="500"></canvas>
     </div>
+
     <div class="centerTocke">
         <p id="tocke">0</p>
     </div>
 
-    <!-- Pause/Resume Button -->
     <div class="centerPause">
         <button id="pauseResumeBtn">Pause</button>
     </div>
+
     <div class="centerStart">
         <button id="startBtn">Start Game</button>
     </div>
 
-    <script type="text/javascript" src="script.js"></script> 
+    <!-- 🎵 Predvajalnik glasbe -->
+    <div id="songPlayer">
+        <audio id="musicPlayer" loop>
+            <source src="audio/lofi_1_Kainbeats - mindscapes.mp3" type="audio/mpeg">
+            Vaš brskalnik ne podpira elementa "audio".
+        </audio>
+
+        <div class="music-controls">
+            <button id="prevButton">⏮️</button>
+            <button id="playPauseButton">▶️</button>
+            <button id="nextButton">⏭️</button>
+        </div>
+
+        <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.5">
+        <div id="songName">Napaka.</div>
+    </div>
+
+    <script src="script.js"></script> 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 </html>

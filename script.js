@@ -221,3 +221,79 @@ function drawIt() {
         }
     });
 }
+
+
+// 🎵 GLASBA
+const musicPlayer = document.getElementById("musicPlayer");
+const playPauseButton = document.getElementById("playPauseButton");
+const prevButton = document.getElementById("prevButton");
+const nextButton = document.getElementById("nextButton");
+const volumeSlider = document.getElementById("volumeSlider");
+const songNameDisplay = document.getElementById("songName");
+
+// Pesmi
+const audioFiles = [
+    { file: "audio/lofi_1_Kainbeats - mindscapes.mp3", name: "Kainbeats - Mindscapes" },
+    { file: "audio/lofi_2_kudasai - love lasts.mp3", name: "Kudasai - Love lasts" },
+    { file: "audio/lofi_3_WYS - lone (ft. ease.).mp3", name: "WYS - Lone (ft. ease.)" },
+    { file: "audio/lofi_4_idealism - seeing you.mp3", name: "Idealism - Seeing you" },
+    { file: "audio/lofi_5_austin chen - faces.mp3", name: "Austin Chen - Faces" }
+];
+
+let currentTrack = 0;
+let isPlaying = false;
+
+function updateTrack() {
+    musicPlayer.src = audioFiles[currentTrack].file;
+    songNameDisplay.textContent = audioFiles[currentTrack].name;
+    musicPlayer.load();
+    if (isPlaying) {
+        musicPlayer.play();
+    }
+}
+
+// Play/pause
+playPauseButton.addEventListener("click", () => {
+    if (musicPlayer.paused) {
+        musicPlayer.play();
+        isPlaying = true;
+        playPauseButton.textContent = "⏸️";
+    } else {
+        musicPlayer.pause();
+        isPlaying = false;
+        playPauseButton.textContent = "▶️";
+    }
+});
+
+// Naslednja pesem
+nextButton.addEventListener("click", () => {
+    currentTrack = (currentTrack + 1) % audioFiles.length;
+    updateTrack();
+    isPlaying = true;
+    playPauseButton.textContent = "⏸️";
+});
+
+// Prejšnja pesem
+prevButton.addEventListener("click", () => {
+    currentTrack = (currentTrack - 1 + audioFiles.length) % audioFiles.length;
+    updateTrack();
+    isPlaying = true;
+    playPauseButton.textContent = "⏸️";
+});
+
+// Spreminjanje glasnosti
+volumeSlider.addEventListener("input", () => {
+    musicPlayer.volume = volumeSlider.value;
+});
+
+// Ko se pesem konča
+musicPlayer.addEventListener("ended", () => {
+    currentTrack = (currentTrack + 1) % audioFiles.length;
+    updateTrack();
+    isPlaying = true;
+    playPauseButton.textContent = "⏸️";
+});
+
+// Začetna nastavitev
+updateTrack();
+musicPlayer.volume = 0.5;
