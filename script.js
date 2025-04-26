@@ -1,5 +1,7 @@
 let isPaused = false;
 let intervalId;
+var brickImage = new Image();
+brickImage.src = 'img/invader.gif';
 
 function drawIt() {
     var x = 308;
@@ -14,10 +16,10 @@ function drawIt() {
     var paddlecolor = "#FFFFFF";
     var ballcolor = "#FFFFFF";
     var bricks = [];
-    var brickRowCount = 5;
-    var brickColumnCount = 5;
-    var brickWidth;
-    var brickHeight = 15;
+    var brickRowCount = 3;
+    var brickColumnCount = 11;
+    var brickWidth = 50;
+    var brickHeight = 50;
     var brickPadding = 10;
     var brickOffsetTop = 30;
     var brickOffsetLeft = 30;
@@ -32,7 +34,7 @@ function drawIt() {
         ctx = $('#canvas')[0].getContext("2d");
         WIDTH = $("#canvas").width();
         HEIGHT = $("#canvas").height();
-        brickWidth = (WIDTH - brickOffsetLeft * 2 - (brickColumnCount - 1) * brickPadding) / brickColumnCount;
+        //brickWidth = (WIDTH - brickOffsetLeft * 2 - (brickColumnCount - 1) * brickPadding) / brickColumnCount;
         tocke = 0;
         $("#tocke").html(tocke);
         intervalId = setInterval(draw, 10);
@@ -87,12 +89,15 @@ function drawIt() {
                     let brickY = (r * (brickHeight + brickPadding)) + brickOffsetTop;
                     bricks[c][r].x = brickX;
                     bricks[c][r].y = brickY;
-                    ctx.fillStyle = rowcolors[r];
-                    rect(brickX, brickY, brickWidth, brickHeight);
+                    // Instead of coloring, we draw the GIF
+                    ctx.drawImage(brickImage, brickX, brickY, brickWidth, brickHeight);
                 }
             }
         }
     }
+
+
+
 
     function collisionDetection() {
         let allBricksCleared = true;  // Add this to check if all bricks are cleared

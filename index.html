@@ -17,30 +17,30 @@
         <p id="tocke">0</p>
     </div>
 
-    <div class="centerPause">
-        <button id="pauseResumeBtn">Pause</button>
-    </div>
+    <!-- NEW WRAPPER DIV -->
+    <div class="controlPanel">
+        <div class="controlContainer">
+            <button id="pauseResumeBtn">Pause</button>
+            <button id="startBtn">Start Game</button>
 
-    <div class="centerStart">
-        <button id="startBtn">Start Game</button>
-    </div>
+            <div id="songPlayer">
+                <audio id="musicPlayer" loop>
+                    <source src="audio/lofi_1_Kainbeats - mindscapes.mp3" type="audio/mpeg">
+                    Vaš brskalnik ne podpira elementa "audio".
+                </audio>
 
-    <!-- 🎵 Predvajalnik glasbe -->
-    <div id="songPlayer">
-        <audio id="musicPlayer" loop>
-            <source src="audio/lofi_1_Kainbeats - mindscapes.mp3" type="audio/mpeg">
-            Vaš brskalnik ne podpira elementa "audio".
-        </audio>
+                <div class="music-controls">
+                    <button id="prevButton">⏮️</button>
+                    <button id="playPauseButton">▶️</button>
+                    <button id="nextButton">⏭️</button>
+                </div>
 
-        <div class="music-controls">
-            <button id="prevButton">⏮️</button>
-            <button id="playPauseButton">▶️</button>
-            <button id="nextButton">⏭️</button>
+                <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.5">
+                <div id="songName">Napaka.</div>
+            </div>
         </div>
-
-        <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.5">
-        <div id="songName">Napaka.</div>
     </div>
+
 
     <script src="script.js"></script> 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

@@ -1,13 +1,13 @@
 * {
-    margin: 0;
-    padding: 0;
+    margin: 0 ;
+    padding: 0 ;
 }
 
 body {
     background-color: #F6DCAC;
-    background-image: url(img/crteR.jpg);
+    background-image: url(img/file.svg);
     background-repeat: no-repeat;
-    background-size: 100%;
+    background-size: cover;
 }
 
 #canvas {
@@ -40,18 +40,28 @@ body {
     text-align: center;
 }
 
-.centerPause {
+/* ===== Corrected Control Panel ===== */
+.controlPanel {
     display: flex;
     justify-content: center;
-    margin-top: 20px;
+    margin-top: 30px;
 }
 
-.centerStart {
+.controlContainer {
     display: flex;
+    align-items: center;
     justify-content: center;
-    margin-top: 20px;
+    gap: 20px;
+    padding: 20px;
+    border: 3px solid #F85525;
+    border-radius: 10px;
+    background-color: #FFE8D6;
+    width: 420px; /* 👈 Fixed width */
+    height: 70px; /* 👈 Fixed height */
 }
 
+
+/* Inside the panel */
 #pauseResumeBtn, #startBtn {
     padding: 10px 20px;
     font-size: 18px;
@@ -61,8 +71,60 @@ body {
     color: white;
     cursor: pointer;
     transition: 0.3s;
+    width: 100px;
 }
 
 #pauseResumeBtn:hover, #startBtn:hover {
     background-color: #F1A512;
+}
+
+/* Song Player */
+#songPlayer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: none;
+    border: none;
+    padding: 0;
+    width: auto;
+}
+
+.music-controls {
+    display: flex;
+    gap: 5px;
+    margin-top: 5px;
+}
+
+#playPauseButton, #prevButton, #nextButton {
+    background-color: #F85525;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    padding: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#playPauseButton:hover, #prevButton:hover, #nextButton:hover {
+    background-color: #F1A512;
+}
+
+#volumeSlider {
+    margin-top: 5px;
+    width: 100px;
+}
+
+#songName {
+    margin-top: 5px;
+    font-size: 14px;
+    text-align: center;
+}
+
+/* ==================================== */
+
+/* OLD centering (can be deleted) */
+.centerPause, .centerStart {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
 }
