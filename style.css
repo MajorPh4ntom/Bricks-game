@@ -3,22 +3,34 @@
     padding: 0 ;
 }
 
+.ButtonJs {
+    padding: 10px 20px;
+    font-size: 18px;
+    background-color: #F85525;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+    width: 200px;
+    font-family: 'Press Start 2P', cursive;
+}
+
 body {
+    font-family: 'Press Start 2P', cursive;
     background-color: #F6DCAC;
-    background-image: url(img/file.svg);
+    background-image: url(img/ozadje.jpeg);
     background-repeat: no-repeat;
     background-size: cover;
 }
 
 #canvas {
-    background: #80C4E9;
-    box-shadow: -10px 10px #F85525, 
-                10px -10px #F85525, 
-                -20px 20px #F1A512, 
-                20px -20px #F1A512, 
-                -30px 30px #2BAF90, 
-                30px -30px #2BAF90;
+    background:  #060724;
+    border: 10px #060724 solid;
     border-radius: 2.5px;
+    box-shadow:
+        0 0 20px #060724,
+        0 0 60px #2b8eff;
 }
 
 .canvasPosition {
@@ -30,17 +42,22 @@ body {
 .centerTocke {
     display: flex;
     justify-content: center;
-    margin-top: 100px;
+    margin-top: 50px;
 }
 
 #tocke {
-    width: 30px;
+    background-color: #F85525;
+    color: white;
+    width: 60px;
     border: #F85525 solid 3px;
+    border-radius: 5px;
     font-size: 25px;
     text-align: center;
+    padding: 5px;
+    padding-bottom: 3px;
+    padding-right: 3px;
 }
 
-/* ===== Corrected Control Panel ===== */
 .controlPanel {
     display: flex;
     justify-content: center;
@@ -53,16 +70,19 @@ body {
     justify-content: center;
     gap: 20px;
     padding: 20px;
-    border: 3px solid #F85525;
+    border: 3px solid #2b8eff;
     border-radius: 10px;
-    background-color: #FFE8D6;
-    width: 420px; /* 👈 Fixed width */
-    height: 70px; /* 👈 Fixed height */
+    background-color: #060724;
+    width: 700px; 
+    height: 70px;
+    box-shadow:
+        0 0 20px #060724,
+        0 0 60px #2b8eff;
 }
 
 
 /* Inside the panel */
-#pauseResumeBtn, #startBtn {
+#pauseResumeBtn, #startBtn, #difficultySelect, #vizitkaBtn  {
     padding: 10px 20px;
     font-size: 18px;
     background-color: #F85525;
@@ -71,28 +91,12 @@ body {
     color: white;
     cursor: pointer;
     transition: 0.3s;
-    width: 100px;
+    width: 200px;
+    font-family: 'Press Start 2P', cursive;
 }
 
-#pauseResumeBtn:hover, #startBtn:hover {
+#pauseResumeBtn:hover, #startBtn:hover, #difficultySelect:hover, #vizitkaBtn:hover, .ButtonJs:hover {
     background-color: #F1A512;
-}
-
-/* Song Player */
-#songPlayer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background: none;
-    border: none;
-    padding: 0;
-    width: auto;
-}
-
-.music-controls {
-    display: flex;
-    gap: 5px;
-    margin-top: 5px;
 }
 
 #playPauseButton, #prevButton, #nextButton {
@@ -107,24 +111,4 @@ body {
 
 #playPauseButton:hover, #prevButton:hover, #nextButton:hover {
     background-color: #F1A512;
-}
-
-#volumeSlider {
-    margin-top: 5px;
-    width: 100px;
-}
-
-#songName {
-    margin-top: 5px;
-    font-size: 14px;
-    text-align: center;
-}
-
-/* ==================================== */
-
-/* OLD centering (can be deleted) */
-.centerPause, .centerStart {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
 }

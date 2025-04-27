@@ -1,304 +1,244 @@
 let isPaused = false;
 let intervalId;
 var brickImage = new Image();
-brickImage.src = 'img/invader.gif';
+brickImage.src = 'img/invader.png';
+let wobbleTimer = 0;
+let wobbleDirection = 1;
+let wobbleInterval = 500;
+var brickImage1 = new Image();
+brickImage1.src = 'img/invader.png';
+var brickImage2 = new Image();
+brickImage2.src = 'img/invader2.png';
+var brickImage = brickImage1;
+let selectedDifficulty = "normal";
+let speedMultiplier = 1;
+let x = 308;
+let y = 400;
+let dx = 1;
+let dy = 1;
+let WIDTH;
+let HEIGHT;
+let r = 6;
+let tocke = 0;
+let rowcolors = ["#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF"];
+let paddlecolor = "#FFFFFF";
+let ballcolor = "#FFFFFF";
+let bricks = [];
+let brickRowCount = 3;
+let brickColumnCount = 10;
+let brickWidth = 50;
+let brickHeight = 50;
+let brickPadding = 10;
+let brickOffsetTop = 30;
+let brickOffsetLeft = 50;
+let ctx;
+let rightDown = false;
+let leftDown = false;
+let paddlex;
+let paddleh;
+let paddlew;
 
-function drawIt() {
-    var x = 308;
-    var y = 400;
-    var dx = 1;
-    var dy = 1;
-    var WIDTH;
-    var HEIGHT;
-    var r = 10;
-    var tocke;
-    var rowcolors = ["#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF"];
-    var paddlecolor = "#FFFFFF";
-    var ballcolor = "#FFFFFF";
-    var bricks = [];
-    var brickRowCount = 3;
-    var brickColumnCount = 11;
-    var brickWidth = 50;
-    var brickHeight = 50;
-    var brickPadding = 10;
-    var brickOffsetTop = 30;
-    var brickOffsetLeft = 30;
-    var ctx;
-    var rightDown = false;
-    var leftDown = false;
-    var paddlex;
-    var paddleh;
-    var paddlew;
-
-    function init() {
-        ctx = $('#canvas')[0].getContext("2d");
-        WIDTH = $("#canvas").width();
-        HEIGHT = $("#canvas").height();
-        //brickWidth = (WIDTH - brickOffsetLeft * 2 - (brickColumnCount - 1) * brickPadding) / brickColumnCount;
-        tocke = 0;
-        $("#tocke").html(tocke);
-        intervalId = setInterval(draw, 10);
-    }
-
-    function circle(x, y, r) {
-        ctx.beginPath();
-        ctx.arc(x, y, r, 0, Math.PI * 2, true);
-        ctx.closePath();
-        ctx.fill();
-    }
-
-    function rect(x, y, w, h) {
-        ctx.beginPath();
-        ctx.rect(x, y, w, h);
-        ctx.closePath();
-        ctx.fill();
-    }
-
-    function clear() {
-        ctx.clearRect(0, 0, WIDTH, HEIGHT);
-    }
-
-    function init_paddle() {
-        paddlex = WIDTH / 2 - 50;
-        paddleh = 10;
-        paddlew = 100;
-    }
-
-    function onKeyDown(evt) {
-        if (evt.keyCode == 39 || evt.keyCode == 68)
-            rightDown = true;
-        else if (evt.keyCode == 37 || evt.keyCode == 65)
-            leftDown = true;
-    }
-
-    function onKeyUp(evt) {
-        if (evt.keyCode == 39 || evt.keyCode == 68)
-            rightDown = false;
-        else if (evt.keyCode == 37 || evt.keyCode == 65)
-            leftDown = false;
-    }
-
-    $(document).keydown(onKeyDown);
-    $(document).keyup(onKeyUp);
-
-    function drawBricks() {
-        for (let c = 0; c < brickColumnCount; c++) {
-            for (let r = 0; r < brickRowCount; r++) {
-                if (bricks[c][r].status == 1) {
-                    let brickX = (c * (brickWidth + brickPadding)) + brickOffsetLeft;
-                    let brickY = (r * (brickHeight + brickPadding)) + brickOffsetTop;
-                    bricks[c][r].x = brickX;
-                    bricks[c][r].y = brickY;
-                    // Instead of coloring, we draw the GIF
-                    ctx.drawImage(brickImage, brickX, brickY, brickWidth, brickHeight);
-                }
-            }
-        }
-    }
-
-
-
-
-    function collisionDetection() {
-        let allBricksCleared = true;  // Add this to check if all bricks are cleared
-
-        for (let c = 0; c < brickColumnCount; c++) {
-            for (let r = 0; r < brickRowCount; r++) {
-                let b = bricks[c][r];
-                if (b.status === 1) {
-                    allBricksCleared = false;  // If there are still bricks, set to false
-                    let ballNextX = x + dx;
-                    let ballNextY = y + dy;
-
-                    let collision =
-                        ballNextX + r > b.x &&
-                        ballNextX - r < b.x + brickWidth &&
-                        ballNextY + r > b.y &&
-                        ballNextY - r < b.y + brickHeight;
-
-                    if (collision) {
-                        // Bounce based on entry direction
-                        let overlapX =
-                            Math.min(ballNextX + r, b.x + brickWidth) -
-                            Math.max(ballNextX - r, b.x);
-                        let overlapY =
-                            Math.min(ballNextY + r, b.y + brickHeight) -
-                            Math.max(ballNextY - r, b.y);
-
-                        if (overlapX < overlapY) {
-                            dx = -dx;
-                        } else {
-                            dy = -dy;
-                        }
-
-                        b.status = 0;
-                        tocke += 1;
-                        $("#tocke").html(tocke);
-                    }
-                }
-            }
-        }
-
-        // If all bricks are cleared, show the SweetAlert
-        if (allBricksCleared) {
-            clearInterval(intervalId);  // Stop the game
-            Swal.fire({
-                title: 'Congratulations!',
-                text: 'You cleared all the bricks and scored ' + tocke + ' points.',
-                icon: 'success',
-                confirmButtonText: 'Play Again',
-                willClose: () => {
-                    location.reload();  // Reload to restart the game
-                }
-            });
-        }
-    }
-
-    let prevX = x;
-    let prevY = y;
-
-    function draw() {
-        if (isPaused) return;
-
-        clear();
-        ctx.fillStyle = ballcolor;
-        circle(x, y, r);
-
-        if (rightDown && paddlex + paddlew < WIDTH) paddlex += 5;
-        if (leftDown && paddlex > 0) paddlex -= 5;
-
-        ctx.fillStyle = paddlecolor;
-        rect(paddlex, HEIGHT - paddleh, paddlew, paddleh);
-
-        drawBricks();
-        collisionDetection();
-        x += dx;
-        y += dy;
-
-
-        if (x + dx > WIDTH - r || x + dx < r) dx = -dx;
-        if (y + dy < r) {
-            dy = -dy;
-        } else if (x > paddlex && x < paddlex + paddlew && y + r > HEIGHT - paddleh) {
-            dy = -dy;
-            let hitPos = (x - (paddlex + paddlew / 2)) / (paddlew / 2);
-            dx = hitPos * 1.5; // Adjusted multiplier for slower movement
-        } else if (!(x > paddlex && x < paddlex + paddlew) && y + r > HEIGHT) {
-            clearInterval(intervalId);
-            Swal.fire({
-                title: 'Game Over!',
-                text: 'You scored ' + tocke + ' points.',
-                icon: 'error',
-                confirmButtonText: 'Try Again',
-                willClose: () => {
-                    location.reload();
-                }
-            });
-        }
-
-        x += dx;
-        y += dy;
-
-    }
-
-    function initBricks() {
-        for (let c = 0; c < brickColumnCount; c++) {
-            bricks[c] = [];
-            for (let r = 0; r < brickRowCount; r++) {
-                bricks[c][r] = { x: 0, y: 0, status: 1 };
-            }
-        }
-    }
-
-    init();
+function setupGame() {
+    ctx = $('#canvas')[0].getContext("2d");
+    WIDTH = $("#canvas").width();
+    HEIGHT = $("#canvas").height();
     init_paddle();
     initBricks();
+    clear();
+}
 
-    $("#pauseResumeBtn").click(function () {
+setupGame();
+
+$("#startBtn").click(function () {
+    selectedDifficulty = $("#difficultySelect").val();
+
+    if (selectedDifficulty === "easy") {
+        speedMultiplier = 1.5;
+    } else if (selectedDifficulty === "normal") {
+        speedMultiplier = 2;
+    } else if (selectedDifficulty === "hard") {
+        speedMultiplier = 2.75;
+    }
+
+    if (!intervalId) {
+        intervalId = setInterval(draw, 10);
+    }
+});
+
+function circle(x, y, r) {
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2, true);
+    ctx.closePath();
+    ctx.fill();
+}
+
+function rect(x, y, w, h) {
+    ctx.beginPath();
+    ctx.rect(x, y, w, h);
+    ctx.closePath();
+    ctx.fill();
+}
+
+function clear() {
+    ctx.clearRect(0, 0, WIDTH, HEIGHT);
+}
+
+function init_paddle() {
+    paddlex = WIDTH / 2 - 50;
+    paddleh = 10;
+    paddlew = 100;
+}
+
+function onKeyDown(evt) {
+    if (evt.keyCode == 39 || evt.keyCode == 68) rightDown = true;
+    else if (evt.keyCode == 37 || evt.keyCode == 65) leftDown = true;
+}
+
+function onKeyUp(evt) {
+    if (evt.keyCode == 39 || evt.keyCode == 68) rightDown = false;
+    else if (evt.keyCode == 37 || evt.keyCode == 65) leftDown = false;
+}
+
+$(document).keydown(onKeyDown);
+$(document).keyup(onKeyUp);
+
+function drawBricks() {
+    for (let c = 0; c < brickColumnCount; c++) {
+        for (let r = 0; r < brickRowCount; r++) {
+            if (bricks[c][r].status == 1) {
+                let brickX = (c * (brickWidth + brickPadding)) + brickOffsetLeft + (wobbleDirection * 2);
+                let brickY = (r * (brickHeight + brickPadding)) + brickOffsetTop;
+                bricks[c][r].x = brickX;
+                bricks[c][r].y = brickY;
+                ctx.drawImage(brickImage, brickX, brickY, brickWidth, brickHeight);
+            }
+        }
+    }
+}
+
+function collisionDetection() {
+    let allBricksCleared = true;
+    for (let c = 0; c < brickColumnCount; c++) {
+        for (let r = 0; r < brickRowCount; r++) {
+            let b = bricks[c][r];
+            if (b.status === 1) {
+                allBricksCleared = false;
+                if (x > b.x && x < b.x + brickWidth && y > b.y && y < b.y + brickHeight) {
+                    dy = -dy;
+                    b.status = 0;
+                    tocke += 1;
+                    $("#tocke").html(tocke);
+                }
+            }
+        }
+    }
+
+    if (allBricksCleared) {
+        clearInterval(intervalId);
+        Swal.fire({
+            title: 'Bravo!',
+            text: 'Uničil si vse "invaderje" in dobil: ' + tocke + ' točk.',
+            icon: 'success',
+            confirmButtonText: 'Igraj znova?',
+            customClass: {
+                confirmButton: 'ButtonJs'
+            },
+            willClose: () => {
+                location.reload();
+            }
+        });
+    }
+}
+
+function draw() {
+    if (isPaused) return;
+
+    clear();
+    ctx.fillStyle = ballcolor;
+    circle(x, y, r);
+
+    if (rightDown && paddlex + paddlew < WIDTH) paddlex += 5;
+    if (leftDown && paddlex > 0) paddlex -= 5;
+
+    ctx.fillStyle = paddlecolor;
+    rect(paddlex, HEIGHT - paddleh, paddlew, paddleh);
+    wobbleTimer += 10;
+    if (wobbleTimer >= wobbleInterval) {
+        wobbleDirection *= -1;
+        wobbleTimer = 0;
+        
+        if (brickImage === brickImage1) {
+            brickImage = brickImage2;
+        } else {
+            brickImage = brickImage1;
+        }
+    }
+
+    drawBricks();
+    collisionDetection();
+
+    x += dx * speedMultiplier;
+    y += dy * speedMultiplier;
+
+    if (x + dx > WIDTH - r || x + dx < r) dx = -dx;
+    if (y + dy < r) {
+        dy = -dy;
+    } else if (y + r >= HEIGHT - paddleh && x > paddlex && x < paddlex + paddlew) {
+        dy = -dy;
+        let hitPos = (x - (paddlex + paddlew / 2)) / (paddlew / 2);
+        dx = hitPos * 1.5;
+    } else if (y + r > HEIGHT) {
+        clearInterval(intervalId);
+        Swal.fire({
+            title: 'Konec igre!',
+            text: 'Točke: ' + tocke,
+            icon: 'error',
+            confirmButtonText: 'Poskusi znova',
+            customClass: {
+                confirmButton: 'ButtonJs'
+            },
+            willClose: () => {
+                location.reload();
+            }
+        });
+    }
+}
+
+
+function initBricks() {
+    for (let c = 0; c < brickColumnCount; c++) {
+        bricks[c] = [];
+        for (let r = 0; r < brickRowCount; r++) {
+            bricks[c][r] = { x: 0, y: 0, status: 1 };
+        }
+    }
+}
+
+$("#pauseResumeBtn").click(function () {
+    if (intervalId) {
         if (isPaused) {
             isPaused = false;
             $(this).text("Pause");
-            intervalId = setInterval(draw, 10);
         } else {
             isPaused = true;
             $(this).text("Resume");
-            clearInterval(intervalId);
+        }
+    }
+});
+
+$("#vizitkaBtn").click(function () {
+    Swal.fire({
+        title: 'Vizitka',
+        html: `
+            <br>
+            <p>Maj Klinc</p>
+            <br>
+            <p>4. Rb</p>
+        `,
+        icon: 'info',
+        confirmButtonText: 'Zapri',
+        customClass: {
+            confirmButton: 'ButtonJs'
         }
     });
-}
-
-
-// 🎵 GLASBA
-const musicPlayer = document.getElementById("musicPlayer");
-const playPauseButton = document.getElementById("playPauseButton");
-const prevButton = document.getElementById("prevButton");
-const nextButton = document.getElementById("nextButton");
-const volumeSlider = document.getElementById("volumeSlider");
-const songNameDisplay = document.getElementById("songName");
-
-// Pesmi
-const audioFiles = [
-    { file: "audio/lofi_1_Kainbeats - mindscapes.mp3", name: "Kainbeats - Mindscapes" },
-    { file: "audio/lofi_2_kudasai - love lasts.mp3", name: "Kudasai - Love lasts" },
-    { file: "audio/lofi_3_WYS - lone (ft. ease.).mp3", name: "WYS - Lone (ft. ease.)" },
-    { file: "audio/lofi_4_idealism - seeing you.mp3", name: "Idealism - Seeing you" },
-    { file: "audio/lofi_5_austin chen - faces.mp3", name: "Austin Chen - Faces" }
-];
-
-let currentTrack = 0;
-let isPlaying = false;
-
-function updateTrack() {
-    musicPlayer.src = audioFiles[currentTrack].file;
-    songNameDisplay.textContent = audioFiles[currentTrack].name;
-    musicPlayer.load();
-    if (isPlaying) {
-        musicPlayer.play();
-    }
-}
-
-// Play/pause
-playPauseButton.addEventListener("click", () => {
-    if (musicPlayer.paused) {
-        musicPlayer.play();
-        isPlaying = true;
-        playPauseButton.textContent = "⏸️";
-    } else {
-        musicPlayer.pause();
-        isPlaying = false;
-        playPauseButton.textContent = "▶️";
-    }
 });
-
-// Naslednja pesem
-nextButton.addEventListener("click", () => {
-    currentTrack = (currentTrack + 1) % audioFiles.length;
-    updateTrack();
-    isPlaying = true;
-    playPauseButton.textContent = "⏸️";
-});
-
-// Prejšnja pesem
-prevButton.addEventListener("click", () => {
-    currentTrack = (currentTrack - 1 + audioFiles.length) % audioFiles.length;
-    updateTrack();
-    isPlaying = true;
-    playPauseButton.textContent = "⏸️";
-});
-
-// Spreminjanje glasnosti
-volumeSlider.addEventListener("input", () => {
-    musicPlayer.volume = volumeSlider.value;
-});
-
-// Ko se pesem konča
-musicPlayer.addEventListener("ended", () => {
-    currentTrack = (currentTrack + 1) % audioFiles.length;
-    updateTrack();
-    isPlaying = true;
-    playPauseButton.textContent = "⏸️";
-});
-
-// Začetna nastavitev
-updateTrack();
-musicPlayer.volume = 0.5;
