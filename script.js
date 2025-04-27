@@ -1,18 +1,33 @@
 let isPaused = false;
 let intervalId;
-var brickImage = new Image();
-brickImage.src = 'img/invader.png';
+
+// Brick images
+var brickImage1_easy = new Image();
+brickImage1_easy.src = 'img/invader1.png';
+var brickImage2_easy = new Image();
+brickImage2_easy.src = 'img/invader2.png';
+
+var brickImage1_normal = new Image();
+brickImage1_normal.src = 'img/invader3.png';
+var brickImage2_normal = new Image();
+brickImage2_normal.src = 'img/invader4.png';
+
+var brickImage1_hard = new Image();
+brickImage1_hard.src = 'img/invader5.png';
+var brickImage2_hard = new Image();
+brickImage2_hard.src = 'img/invader6.png';
+
+let currentBrickFrame1 = brickImage1_easy;
+let currentBrickFrame2 = brickImage2_easy;
+let brickImage = currentBrickFrame1;
+
 let wobbleTimer = 0;
 let wobbleDirection = 1;
 let wobbleInterval = 500;
-var brickImage1 = new Image();
-brickImage1.src = 'img/invader.png';
-var brickImage2 = new Image();
-brickImage2.src = 'img/invader2.png';
-var brickImage = brickImage1;
+
 let selectedDifficulty = "normal";
 let speedMultiplier = 1;
-let x = 308;
+let x = 304;
 let y = 400;
 let dx = 1;
 let dy = 1;
@@ -27,7 +42,7 @@ let bricks = [];
 let brickRowCount = 3;
 let brickColumnCount = 10;
 let brickWidth = 50;
-let brickHeight = 50;
+let brickHeight = 40;
 let brickPadding = 10;
 let brickOffsetTop = 30;
 let brickOffsetLeft = 50;
@@ -53,12 +68,24 @@ $("#startBtn").click(function () {
     selectedDifficulty = $("#difficultySelect").val();
 
     if (selectedDifficulty === "easy") {
-        speedMultiplier = 1.5;
+        speedMultiplier = 1.75;
+        currentBrickFrame1 = brickImage1_easy;
+        currentBrickFrame2 = brickImage2_easy;
     } else if (selectedDifficulty === "normal") {
-        speedMultiplier = 2;
+        speedMultiplier = 2.25;
+        currentBrickFrame1 = brickImage1_normal;
+        currentBrickFrame2 = brickImage2_normal;
     } else if (selectedDifficulty === "hard") {
-        speedMultiplier = 2.75;
+        speedMultiplier = 3;
+        currentBrickFrame1 = brickImage1_hard;
+        currentBrickFrame2 = brickImage2_hard;
     }
+
+    brickImage = currentBrickFrame1;
+    initBricks();
+
+    // 🚀 DISABLE DIFFICULTY DROPDOWN
+    $("#difficultySelect").prop("disabled", true);
 
     if (!intervalId) {
         intervalId = setInterval(draw, 10);
@@ -105,12 +132,13 @@ $(document).keyup(onKeyUp);
 function drawBricks() {
     for (let c = 0; c < brickColumnCount; c++) {
         for (let r = 0; r < brickRowCount; r++) {
-            if (bricks[c][r].status == 1) {
+            let b = bricks[c][r];
+            if (b.status == 1) {
                 let brickX = (c * (brickWidth + brickPadding)) + brickOffsetLeft + (wobbleDirection * 2);
                 let brickY = (r * (brickHeight + brickPadding)) + brickOffsetTop;
-                bricks[c][r].x = brickX;
-                bricks[c][r].y = brickY;
-                ctx.drawImage(brickImage, brickX, brickY, brickWidth, brickHeight);
+                b.x = brickX;
+                b.y = brickY;
+                ctx.drawImage(b.image, brickX, brickY, brickWidth, brickHeight);
             }
         }
     }
@@ -125,9 +153,12 @@ function collisionDetection() {
                 allBricksCleared = false;
                 if (x > b.x && x < b.x + brickWidth && y > b.y && y < b.y + brickHeight) {
                     dy = -dy;
-                    b.status = 0;
-                    tocke += 1;
-                    $("#tocke").html(tocke);
+                    b.health--;
+                    if (b.health <= 0) {
+                        b.status = 0;
+                        tocke += b.points; // 💥 Use dynamic points from brick
+                        $("#tocke").html(tocke);
+                    }
                 }
             }
         }
@@ -162,15 +193,20 @@ function draw() {
 
     ctx.fillStyle = paddlecolor;
     rect(paddlex, HEIGHT - paddleh, paddlew, paddleh);
+
     wobbleTimer += 10;
     if (wobbleTimer >= wobbleInterval) {
         wobbleDirection *= -1;
         wobbleTimer = 0;
-        
-        if (brickImage === brickImage1) {
-            brickImage = brickImage2;
-        } else {
-            brickImage = brickImage1;
+
+        // Switch images for all bricks
+        for (let c = 0; c < brickColumnCount; c++) {
+            for (let r = 0; r < brickRowCount; r++) {
+                let b = bricks[c][r];
+                if (b.status == 1) {
+                    b.image = (b.image === b.frame1) ? b.frame2 : b.frame1;
+                }
+            }
         }
     }
 
@@ -204,15 +240,67 @@ function draw() {
     }
 }
 
-
 function initBricks() {
     for (let c = 0; c < brickColumnCount; c++) {
         bricks[c] = [];
         for (let r = 0; r < brickRowCount; r++) {
-            bricks[c][r] = { x: 0, y: 0, status: 1 };
+            let brick = {
+                x: 0,
+                y: 0,
+                status: 1,
+                health: 1,
+                frame1: brickImage1_easy,
+                frame2: brickImage2_easy,
+                image: brickImage1_easy,
+                points: 1 // Default points = 1
+            };
+
+            if (selectedDifficulty === "easy") {
+                brick.frame1 = brickImage1_easy;
+                brick.frame2 = brickImage2_easy;
+                brick.health = 1;
+                brick.points = 1;
+            } else if (selectedDifficulty === "normal") {
+                brick.frame1 = brickImage1_normal;
+                brick.frame2 = brickImage2_normal;
+                brick.health = 2;
+                brick.points = 2;
+            } else if (selectedDifficulty === "hard") {
+                brick.frame1 = brickImage1_hard;
+                brick.frame2 = brickImage2_hard;
+                brick.health = 3;
+                brick.points = 3;
+            } else if (selectedDifficulty === "medium") {
+                // Top row (3rd row), ensure 3 invader5/6
+                if (r === 2 && Math.random() < 0.3 && c < 3) {
+                    brick.frame1 = brickImage1_hard;
+                    brick.frame2 = brickImage2_hard;
+                    brick.health = 3;
+                    brick.points = 3;
+                } 
+                // Ensure 7-10 invader3/4 in other rows
+                else if (r !== 2 && Math.random() < 0.5) {
+                    brick.frame1 = brickImage1_normal;
+                    brick.frame2 = brickImage2_normal;
+                    brick.health = 2;
+                    brick.points = 2;
+                } else {
+                    // Remaining bricks as invader1/2
+                    brick.frame1 = brickImage1_easy;
+                    brick.frame2 = brickImage2_easy;
+                    brick.health = 1;
+                    brick.points = 1;
+                }
+            }
+
+            brick.image = brick.frame1;
+            bricks[c][r] = brick;
         }
     }
 }
+
+
+
 
 $("#pauseResumeBtn").click(function () {
     if (intervalId) {
