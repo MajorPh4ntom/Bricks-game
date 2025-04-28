@@ -18,7 +18,7 @@
 
 body {
     font-family: 'Press Start 2P', cursive;
-    background-color: #F6DCAC;
+    background-color: #060724;
     background-image: url(img/ozadje.jpeg);
     background-repeat: no-repeat;
     background-size: cover;
@@ -34,7 +34,7 @@ body {
 }
 
 .canvasPosition {
-    margin-top: 100px; 
+    margin-top: 40px; 
     display: flex; 
     justify-content: center; 
 }
@@ -80,9 +80,7 @@ body {
         0 0 60px #2b8eff;
 }
 
-
-/* Inside the panel */
-#pauseResumeBtn, #startBtn, #difficultySelect, #vizitkaBtn  {
+#pauseResumeBtn, #startBtn, #difficultySelect, #vizitkaBtn {
     padding: 10px 20px;
     font-size: 18px;
     background-color: #F85525;
@@ -99,23 +97,11 @@ body {
     background-color: #F1A512;
 }
 
-#playPauseButton, #prevButton, #nextButton {
-    background-color: #F85525;
-    border: none;
-    border-radius: 5px;
-    color: white;
-    padding: 8px;
-    cursor: pointer;
-    transition: 0.3s;
-}
 
-#playPauseButton:hover, #prevButton:hover, #nextButton:hover {
-    background-color: #F1A512;
-}
 
 #difficultySelect:disabled {
-    background-color: #444;   /* darker background */
-    color: #aaa;              /* lighter text */
-    cursor: not-allowed;      /* cursor shows it's not clickable */
-    opacity: 0.7;             /* slightly transparent */
+    background-color: #444;
+    color: #aaa;
+    cursor: not-allowed;
+    opacity: 0.7;
 }
