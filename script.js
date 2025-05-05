@@ -34,8 +34,8 @@ let selectedDifficulty = "normal";
 let speedMultiplier = 1;
 let x = 304;
 let y = 400;
-let dx = 1; //hitrost zoge x
-let dy = 1; //hitrost zoge y
+let dx = 0.7; //hitrost zoge x
+let dy = 0.7; //hitrost zoge y
 let WIDTH;
 let HEIGHT;
 let r = 6;
