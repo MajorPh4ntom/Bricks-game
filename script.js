@@ -66,19 +66,21 @@ function setupGame() {
     clear();
 }
 
-$("#startBtn").click(function () {
+$("#startBtn").click(function (event) {
+    event.preventDefault(); // ne pusti poslat
+
     selectedDifficulty = $("#difficultySelect").val();
 
     if (selectedDifficulty === "easy") {
-        speedMultiplier = 2;
+        speedMultiplier = 4;
         currentBrickFrame1 = brickImage1_easy;
         currentBrickFrame2 = brickImage2_easy;
     } else if (selectedDifficulty === "normal") {
-        speedMultiplier = 3;
+        speedMultiplier = 6;
         currentBrickFrame1 = brickImage1_normal;
         currentBrickFrame2 = brickImage2_normal;
     } else if (selectedDifficulty === "hard") {
-        speedMultiplier = 4.5;
+        speedMultiplier = 8;
         currentBrickFrame1 = brickImage1_hard;
         currentBrickFrame2 = brickImage2_hard;
     }
@@ -90,9 +92,10 @@ $("#startBtn").click(function () {
     setupGame();
 
     if (!intervalId) {
-        intervalId = setInterval(draw, 10); //rise vsakih 10ms ce se intervalid ni nastavljen
+        intervalId = setInterval(draw, 10); // dela vsake 10ms
     }
 });
+
 
 function circle(x, y, r) {
     ctx.beginPath();

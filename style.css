@@ -73,7 +73,7 @@ body {
     border: 3px solid #2b8eff;
     border-radius: 10px;
     background-color: #060724;
-    width: 700px; 
+    width: 40%; 
     height: 70px;
     box-shadow:
         0 0 20px #060724,
@@ -89,8 +89,8 @@ body {
     color: white;
     cursor: pointer;
     transition: 0.3s;
-    width: 200px;
     font-family: 'Press Start 2P', cursive;
+    align-items: center;
 }
 
 #pauseResumeBtn:hover, #startBtn:hover, #difficultySelect:hover, #vizitkaBtn:hover, .ButtonJs:hover {
